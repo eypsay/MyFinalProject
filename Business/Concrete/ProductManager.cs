@@ -1,0 +1,31 @@
+﻿using Business.Abstract;
+using DataAccess.Abstract;
+using DataAccess.Concrete.InMemory;
+using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Business.Concrete
+{
+    public class ProductManager : IProductService
+    {
+        IProductDal _productDal;
+
+        public ProductManager(IProductDal productDal)
+        {
+            _productDal = productDal;
+        }
+
+        public List<Product> GetAll()
+        {
+            //Is Kodlari
+            // throw new NotImplementedException();
+
+            //HATALI!!!=> InMemoryProdcutDal inMemoryProductDal =new InmemoryProductDal();
+
+            //yetkisi var mi?
+            return _productDal.GetAll();
+        }
+    }
+}
