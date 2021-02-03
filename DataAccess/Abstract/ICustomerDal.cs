@@ -5,11 +5,8 @@ using System.Text;
 
 namespace DataAccess.Abstract
 {
-
-    //product tablosuna iat interface
-    public interface IProductDal:IEntityRepository<Product>
+  public   interface ICustomerDal:IEntityRepository<Customer>
     {
-      
 
     }
 }
