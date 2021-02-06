@@ -20,6 +20,22 @@ namespace ConsoleUI
 
 
             /////ENTITY FRAMEWORK
+             ProductTest();
+            //IoC conteiner ile yapınca new Efca... kısmını kaldıracazı
+           // CategoryTest();
+        }
+
+        private static void CategoryTest()
+        {
+            CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
+            foreach (var category in categoryManager.GetAll())
+            {
+                Console.WriteLine(category.CategoryName);
+            }
+        }
+
+        private static void ProductTest()
+        {
             ProductManager productManager = new ProductManager(new EfProductDal());
 
             foreach (var product in productManager.GetAll())
@@ -34,11 +50,15 @@ namespace ConsoleUI
             }
 
             Console.WriteLine("-------UNITPROCE MIN-MAX-------------");
-            foreach (var product in productManager.GetByUnitPrice(50,100))
+            foreach (var product in productManager.GetByUnitPrice(50, 100))
             {
-                Console.WriteLine("Name: {0} -- Price: {1}",product.ProductName,product.UnitPrice);
+                Console.WriteLine("Name: {0} -- Price: {1}", product.ProductName, product.UnitPrice);
             }
-
+            Console.WriteLine("-------PRODUCT NAME => CATEGORY NAME-------------");
+            foreach (var product in productManager.GetProductDetails ())
+            {
+                Console.WriteLine(product.ProductName+" ----> "+product.CategoryName);
+            }
         }
     }
 }
