@@ -38,26 +38,41 @@ namespace ConsoleUI
         {
             ProductManager productManager = new ProductManager(new EfProductDal());
 
-            foreach (var product in productManager.GetAll())
+            foreach (var product in productManager.GetAll().Data)
             {
                 Console.WriteLine(product.ProductName);
             }
 
             Console.WriteLine("-------CATEGORY ID-------------");
-            foreach (var product in productManager.GetAllByCategoryId(2))
+            foreach (var product in productManager.GetAllByCategoryId(2).Data)
             {
                 Console.WriteLine(product.ProductName);
             }
 
             Console.WriteLine("-------UNITPROCE MIN-MAX-------------");
-            foreach (var product in productManager.GetByUnitPrice(50, 100))
+            foreach (var product in productManager.GetByUnitPrice(50, 100).Data)
             {
                 Console.WriteLine("Name: {0} -- Price: {1}", product.ProductName, product.UnitPrice);
             }
             Console.WriteLine("-------PRODUCT NAME => CATEGORY NAME-------------");
-            foreach (var product in productManager.GetProductDetails ())
+
+            //Assagıdaki gibi degistirdik
+            //foreach (var product in productManager.GetProductDetails ())
+            //{
+            //    Console.WriteLine(product.ProductName+" ----> "+product.CategoryName);
+            //}
+
+            var result = productManager.GetProductDetails();
+            if (result.Success)
             {
-                Console.WriteLine(product.ProductName+" ----> "+product.CategoryName);
+                foreach (var product in result.Data)
+                {
+                    Console.WriteLine((product.ProductName+" / "+product.CategoryName));
+                }
+            }
+            else
+            {
+                Console.WriteLine(result.Message);
             }
         }
     }
