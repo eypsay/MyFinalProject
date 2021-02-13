@@ -75,7 +75,7 @@ namespace Business.Concrete
 
             //yetkisi var mi?
             // return _productDal.GetAll();
-            if (DateTime.Now.Hour == 12)
+            if (DateTime.Now.Hour == 21)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);//sistemi bu saaate kapamak istiyorum
             }
