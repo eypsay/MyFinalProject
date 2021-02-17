@@ -32,9 +32,10 @@ namespace WebAPI
             //Autofac,Ninject,CastleWindsor,SturcterMap,LightInject,DryInject-->IoC Container
             //biz AOP yapcagýz -> bir metonun onunde, sonunda veya hata alabilceði  calýsan kod parcacýklarýdýr
             services.AddControllers();
+            //asagidaki kodlarý biz modlu yazdýgýmýz icin kapattýk bunun yerine program.cs
             //singleton eger icerisinde data tutmuyorsa kullanýlýr
-            services.AddSingleton<IProductService, ProductManager>();//arkaplaönd bir refrans olsutur, bizim yerimize new liyor
-            services.AddSingleton<IProductDal, EfProductDal>();
+            //services.AddSingleton<IProductService, ProductManager>();//arkaplaönd bir refrans olsutur, bizim yerimize new liyor
+            //services.AddSingleton<IProductDal, EfProductDal>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
