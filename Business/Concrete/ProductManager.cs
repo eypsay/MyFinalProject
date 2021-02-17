@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -23,6 +24,7 @@ namespace Business.Concrete
             _productDal = productDal;
         }
 
+        [ValidationAspect(typeof(ProductValidator))]//add methodumuzda validation yok çünkü aspect ekledik
         public IResult Add(Product product)
         {
             //bussines kodlar: Urunu eklemden önce kısıtlar buraya yazılır
@@ -50,7 +52,7 @@ namespace Business.Concrete
             //    throw new ValidationException(result.Errors);
             //}
 
-            ValidationTool.Validate(new ProductValidator(), product);
+           // ValidationTool.Validate(new ProductValidator(), product);    [validaonaspect]'İ yazdığımız için comment ettik
 
             _productDal.Add(product);
             return new SuccessResult(Messages.ProductAdded);
