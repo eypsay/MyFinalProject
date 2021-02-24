@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -6,10 +7,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Business.Concrete
-{
+{//Her entitinin kendi servisi olur
     public class CategoryManager : ICategoryService
     {
-        //burası veri erişimine aglı bunu miniöize etmek için bağımlıgımı constructur injection
+        //burası veri erişimine aglı bunu minimize etmek için bağımlıgımı constructur injection
         // ile yapıyorum
         ICategoryDal _categoryDal;
 
@@ -23,16 +24,16 @@ namespace Business.Concrete
 
 
         //Is kodlarını buraya yazacagım
-        public List<Category> GetAll()
+        public IDataResult<List<Category>> GetAll()
         {
-            return _categoryDal.GetAll();
+            return new SuccessDataResult<List<Category>>( _categoryDal.GetAll());
 
 
         }
 
-        public Category GetById(int categoryId)
+        public IDataResult<Category> GetById(int categoryId)
         {
-            return _categoryDal.Get(c => c.CategoryID == categoryId);
+            return new SuccessDataResult<Category>( _categoryDal.Get(c => c.CategoryID == categoryId));
         }
     }
 }
