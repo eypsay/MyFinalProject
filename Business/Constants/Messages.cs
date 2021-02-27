@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Core.Entities.Concrete;
+using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Business.Constants
@@ -15,5 +17,12 @@ namespace Business.Constants
         public static string ProductUpdated = "Ürün Güncellendi";
         public static string ProductNameAlreadyExists="Aynı İsimde Ürün Var";
         public static string CategoryLimitExceded="Kategori Limiti Aşıldı";
+        public static string AuthorizationDenied="Hooopp";
+        internal static object UserAlreadyExists;
+        internal static string UserRegistered;
+        internal static User UserNotFound;
+        internal static User PasswordError;
+        internal static string SuccessfulLogin;
+        internal static string AccessTokenCreated;
     }
 }

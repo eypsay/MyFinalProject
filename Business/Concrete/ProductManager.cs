@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BussinessAspects.Autofac;
 using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -44,6 +45,9 @@ namespace Business.Concrete
             _categoryService = categoryService;
         }
 
+
+        //Claim bunların admin veya product.add yetksinde olasmı gerekiyor
+       [SecuredOperation( "product.add,admin")]//prodcut.ad yetkisine sahip olaması gerekiyor
 
         [ValidationAspect(typeof(ProductValidator))]//add methodumuzda validation yok çünkü aspect ekledik
 
@@ -183,7 +187,7 @@ namespace Business.Concrete
 
         //yetkisi var mi?
         // return _productDal.GetAll();
-        if (DateTime.Now.Hour == 1)
+        if (DateTime.Now.Hour == 8)
         {
             return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);//sistemi bu saaate kapamak istiyorum
         }
