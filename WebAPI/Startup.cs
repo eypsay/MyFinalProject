@@ -18,6 +18,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Utilities.Security.Encryption;
+using Core.Utilities.IoC;
+using Microsoft.AspNetCore.Http;
+using Core.Extentions;
+using Core.DependencyResolvers;
+
 namespace WebAPI
 {
     public class Startup
@@ -41,7 +46,9 @@ namespace WebAPI
             //services.AddSingleton<IProductDal, EfProductDal>();
 
 
+            //services.AddSingleton<HttpContextAccessor,IHttpContextAccessor>();//bunun yerine asaigdak, addddependency kýsmýný yazdýk
 
+            services.AddCors();//frontend farklý porttan get yapmak icin ekeldik
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -58,6 +65,10 @@ namespace WebAPI
                         IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
                     };                     
                 });
+            //ServiceTool.Create(services);
+            services.AddDependencyResolvers(new ICoreModule[] {
+                new CoreModule() 
+            });
 
         }
 
@@ -68,7 +79,7 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors(builder=>builder.WithOrigins("http://localhost:4200").AllowAnyHeader());//frontend farklý porttan get yapmak icin ekeldik
             app.UseHttpsRedirection();
 
             app.UseRouting();

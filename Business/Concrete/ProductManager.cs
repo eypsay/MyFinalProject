@@ -3,6 +3,7 @@ using Business.BussinessAspects.Autofac;
 using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Business;
@@ -47,11 +48,11 @@ namespace Business.Concrete
 
 
         //Claim bunların admin veya product.add yetksinde olasmı gerekiyor
-       [SecuredOperation( "product.add,admin")]//prodcut.ad yetkisine sahip olaması gerekiyor
+        [SecuredOperation("product.add,admin")]//prodcut.ad yetkisine sahip olaması gerekiyor
 
         [ValidationAspect(typeof(ProductValidator))]//add methodumuzda validation yok çünkü aspect ekledik
 
-
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
         {
             //bussines kodlar: Urunu eklemden önce kısıtlar buraya yazılır
@@ -129,7 +130,7 @@ namespace Business.Concrete
 
             // biz bir iş motoru yazsak çünkü iş kurallarımız hep IRuselt. Yani bne göndereiym benim yerime bu iş kurallarını çalıştırsın
 
-            IResult result = BusinessRules.Run(CheckIfProductCountOfCategoryCorrect(product.CategoryID), CheckIfProductNameExists(product.ProductName),CheckIfCategoryLimitExceded());
+            IResult result = BusinessRules.Run(CheckIfProductCountOfCategoryCorrect(product.CategoryID), CheckIfProductNameExists(product.ProductName), CheckIfCategoryLimitExceded());
 
             if (result != null)
             {
@@ -144,112 +145,115 @@ namespace Business.Concrete
 
         }
 
-    //public List<Product> GetAll()
-    //{
-    //    //Is Kodlari
-    //    // throw new NotImplementedException();
+        //public List<Product> GetAll()
+        //{
+        //    //Is Kodlari
+        //    // throw new NotImplementedException();
 
-    //    //HATALI!!!=> InMemoryProdcutDal inMemoryProductDal =new InmemoryProductDal();
+        //    //HATALI!!!=> InMemoryProdcutDal inMemoryProductDal =new InmemoryProductDal();
 
-    //    //yetkisi var mi?
-    //    return _productDal.GetAll();
-    //}
+        //    //yetkisi var mi?
+        //    return _productDal.GetAll();
+        //}
 
-    //public List<Product> GetAllByCategoryId(int id)
-    //{
-    //    return _productDal.GetAll(p => p.CategoryID == id);
-    //}
+        //public List<Product> GetAllByCategoryId(int id)
+        //{
+        //    return _productDal.GetAll(p => p.CategoryID == id);
+        //}
 
-    //public Product GetById(int productId)
-    //{
-    //    return _productDal.Get(p => p.ProductId == productId);
-    //}
+        //public Product GetById(int productId)
+        //{
+        //    return _productDal.Get(p => p.ProductId == productId);
+        //}
 
-    //public List<Product> GetByUnitPrice(decimal min, decimal max)
-    //{
-    //    return _productDal.GetAll(p=>p.UnitPrice>=min && p.UnitPrice<=max);
-    //}
+        //public List<Product> GetByUnitPrice(decimal min, decimal max)
+        //{
+        //    return _productDal.GetAll(p=>p.UnitPrice>=min && p.UnitPrice<=max);
+        //}
 
-    //public List<ProductDetailDto> GetProductDetails()
-    //{
-    //    return _productDal.GetProductDetails();
-    //}
+        //public List<ProductDetailDto> GetProductDetails()
+        //{
+        //    return _productDal.GetProductDetails();
+        //}
 
-    //////////////////////////////////////////////
-    ///
+        //////////////////////////////////////////////
+        ///
 
-    public IDataResult<List<Product>> GetAll()
-    {
-        //Is Kodlari
-        // throw new NotImplementedException();
-
-        //HATALI!!!=> InMemoryProdcutDal inMemoryProductDal =new InmemoryProductDal();
-
-        //yetkisi var mi?
-        // return _productDal.GetAll();
-        if (DateTime.Now.Hour == 8)
+        [CacheAspect]//bellekte key-value seklinde tutlur
+        public IDataResult<List<Product>> GetAll()
         {
-            return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);//sistemi bu saaate kapamak istiyorum
+            //Is Kodlari
+            // throw new NotImplementedException();
+
+            //HATALI!!!=> InMemoryProdcutDal inMemoryProductDal =new InmemoryProductDal();
+
+            //yetkisi var mi?
+            // return _productDal.GetAll();
+            if (DateTime.Now.Hour == 8)
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);//sistemi bu saaate kapamak istiyorum
+            }
+
+            //return new DataResult<List<Product>>(_productDal.GetAll(),true,"ürünler listelendi");
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductListed);
         }
 
-        //return new DataResult<List<Product>>(_productDal.GetAll(),true,"ürünler listelendi");
-        return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductListed);
-    }
-
-    public IDataResult<List<Product>> GetAllByCategoryId(int id)
-    {
-        return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryID == id));
-    }
-
-    public IDataResult<Product> GetById(int productId)
-    {
-        return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
-    }
-
-    public IDataResult<List<Product>> GetByUnitPrice(decimal min, decimal max)
-    {
-        return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
-    }
-
-    public IDataResult<List<ProductDetailDto>> GetProductDetails()
-    {
-        if (DateTime.Now.Hour == 1)
+        public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
-            return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);//sistemi bu saaate kapamak istiyorum
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryID == id));
         }
 
-        return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
-    }
-
-    [ValidationAspect(typeof(ProductValidator))]
-    public IResult Update(Product product)
-    {
-        ///*** bir categoride 10 ürün olacak 
-        var result = _productDal.GetAll(p => p.CategoryID == product.CategoryID).Count;
-        if (result >= 10)
+        [CacheAspect]
+        public IDataResult<Product> GetById(int productId)
         {
-            return new ErrorResult(Messages.ProductCountOfCategoryError);
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
         }
 
+        public IDataResult<List<Product>> GetByUnitPrice(decimal min, decimal max)
+        {
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
+        }
 
-        _productDal.Update(product);
-        return new SuccessResult(Messages.ProductUpdated);
-    }
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
+        {
+            if (DateTime.Now.Hour == 1)
+            {
+                return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);//sistemi bu saaate kapamak istiyorum
+            }
 
-    //İş kuralı parcacığı olduğu için privatedir
-    private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
-    {
-            
-        var result = _productDal.GetAll(p => p.CategoryID == categoryId).Count; //=> select count(*) from products where categoryId=1
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+        }
+
+        [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]//[CacheRemoveAspect("Get")] bellekteki içerisnde kget olan key leri uçar
+        public IResult Update(Product product)
+        {
+            ///*** bir categoride 10 ürün olacak 
+            var result = _productDal.GetAll(p => p.CategoryID == product.CategoryID).Count;
             if (result >= 10)
-        {
-            return new ErrorResult(Messages.ProductCountOfCategoryError);
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+            }
 
+
+            _productDal.Update(product);
+            return new SuccessResult(Messages.ProductUpdated);
+        }
+
+        //İş kuralı parcacığı olduğu için privatedir
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        {
+
+            var result = _productDal.GetAll(p => p.CategoryID == categoryId).Count; //=> select count(*) from products where categoryId=1
+            if (result >= 10)
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+
+
+            }
+            return new SuccessResult();
 
         }
-        return new SuccessResult();
-
-    }
 
         private IResult CheckIfProductNameExists(string productName)
         {
@@ -274,6 +278,32 @@ namespace Business.Concrete
                 return new ErrorResult(Messages.CategoryLimitExceded);
             }
             return new SuccessResult();
+        }
+        //[TranscationalScopeAspect]// kapattıgımız yer yerine yazdık
+        public IResult AddTransactionalTest(Product product)
+        {
+
+            //using (TransactionalScope scope=new TransactionalScope())
+            //{
+            //    try
+            //    {
+            //        Add(product);
+            //        if (product.UnitPrice < 10)
+            //        {
+            //            throw new Exception("");
+            //        }
+            //        Add(product);//geri alma kısmı
+            //        return null;
+            //    }
+            //    catch (Exception)
+            //    {
+
+            //        throw;
+            //    }
+            //}
+
+
+            return null;
         }
     }
 }

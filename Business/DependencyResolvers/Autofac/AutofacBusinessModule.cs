@@ -36,7 +36,7 @@ namespace Business.DependencyResolvers.Autofac
 
 
 
-           builder.RegisterType<HttpContextAccessor>().As<IHttpContextAccessor>();
+          // builder.RegisterType<HttpContextAccessor>().As<IHttpContextAccessor>();
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces()
