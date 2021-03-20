@@ -48,7 +48,7 @@ namespace Business.Concrete
 
 
         //Claim bunların admin veya product.add yetksinde olasmı gerekiyor
-        [SecuredOperation("product.add,admin")]//prodcut.ad yetkisine sahip olaması gerekiyor
+        /////ANGULAR ICIN KAPATTIM[SecuredOperation("product.add,admin")]//prodcut.ad yetkisine sahip olaması gerekiyor
 
         [ValidationAspect(typeof(ProductValidator))]//add methodumuzda validation yok çünkü aspect ekledik
 
